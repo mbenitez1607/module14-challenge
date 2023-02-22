@@ -1,3 +1,11 @@
-{{#each blogs as |blog|}}
-{{> all-blogs-details}}
-{{/each}}
+<ol class="post-list">
+    <div class="row">
+        {{#each blogs as |blog|}}
+        <div class="col w-100">
+            <ul>
+                {{> blog-headers blog}}
+            </ul>
+        </div>
+        {{/each}}
+    </div>
+</ol>
