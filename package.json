@@ -1,0 +1,36 @@
+{
+  "name": "module14-challenge",
+  "version": "1.0.0",
+  "description": "CMS-style blog site",
+  "main": "server.js",
+  "scripts": {
+    "test": "N/A",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mbenitez1607/module14-challenge.git"
+  },
+  "keywords": [
+    "MySQL2",
+    "Handlebars.js",
+    "Sequelize",
+    "express-session"
+  ],
+  "author": "mbenitez1607",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mbenitez1607/module14-challenge/issues"
+  },
+  "homepage": "https://github.com/mbenitez1607/module14-challenge#readme",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-handlebars": "^6.0.6",
+    "express-session": "^1.17.3",
+    "handlebars": "^4.7.7",
+    "mysql2": "^2.3.3",
+    "sequelize": "^6.26.0"
+  }
+}
