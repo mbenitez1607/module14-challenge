@@ -1,22 +1,18 @@
-<h1>BLOG</h1>>
-<!--{{hbsDebug blog.title}}
-{{blog.creation_date}}
-<p>{{blog.contents}}</p>-->
-  <!--{{> blog-details}}-->
-<!--section class="container">
-  <h3>{{hbsDebug blog.title}}</h3>
-  <h4>{{blog.creation_date}}</h4>
-  <p>{{blog.contents}}</p>
-    {{> blog-details}}
+<section class="card">
+  <header>
+      <h3>{{title }}</h3>
+      <h4>Posted by {{user.username}} on {{format_date creation_date}}</h4>
+  </header>
+  <body>{{contents}}</body>
+</section>
 
-  <!- If the user is logged in, render the gallery content >
+  <!-- If the user is logged in, render the gallery content >
   {{#if loggedIn}}
   <section class="flex-row justify-center">
     {{#each gallery.paintings as |painting|}}
     {{> blog-details}}
     {{/each}}
-  </section->
-</section-->
+  </section-->
 <!-- Otherwise, provide a link to login >
 {{else}}
 <a href="/login">You must login first to view the blogs</a>
