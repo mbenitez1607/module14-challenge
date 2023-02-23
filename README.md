@@ -26,10 +26,9 @@ To run your own version of the app do the following:
 
 ## Usage
 
-To start the app type: `node server.js`
+The aplication is deployed at: [Tech Blog](https://techblog2023.herokuapp.com/)
 
-Click on the image below to watch a video of the E-commerce Back End in action
-[![Video of the E-commerce Back End in action](./320px-E-commerce.png)](https://drive.google.com/file/d/15qkIEkwdqHQYvsfHBlutk3I7eezmbqMa/view?usp=share_link)
+To start the app locally, type: `npm start` on your cosole.
 
 ## License
 
