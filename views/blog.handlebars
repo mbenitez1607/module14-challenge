@@ -6,6 +6,21 @@
   <body>{{contents}}</body>
 </section>
 
+{{#if loggedIn}}
+<div class="row justify-space-between-md">
+  <div class="login-card">
+    <form class="form login-form">
+      <div class="form-group">
+        <label>Comment</label>
+        <input class="form-input" type="text" id="comment" />
+      </div>
+        <button class="btn btn-primary w-100" type="submit">Submit</button>
+      </div>
+    </form>
+  </div>
+</div>
+{{/if}}
+
   <!-- If the user is logged in, render the gallery content >
   {{#if loggedIn}}
   <section class="flex-row justify-center">

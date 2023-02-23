@@ -1,13 +1,21 @@
 const router = require('express').Router();
 const { Blog, User, Comment } = require('../models');
+const withAuth = require('../utils/auth');
 
 // GET ALL BLOGS and render the homepage
 router.get('/', async (req, res) => {
   try {
     const dbBlogData = await Blog.findAll({
-        attributes: ['id', 'title', 'creation_date'],
+      attributes: ['id', 'title', 'creation_date'],
     });
-    res.status(200).json(dbBlogData);
+    // Serialize data so the template can read it
+    const blogs = dbBlogData.map((blog) => blog.get({ plain: true }));
+
+    // Pass serialized data and session flag into template
+    res.render('homepage', {
+      blogs,
+      logged_in: req.session.logged_in
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -35,10 +43,19 @@ router.get('/blog/:id', async (req, res) => {
       ]
     });
     if (!dbBlogData) {
-      res.status(404).json({ message: 'There is no Blog with that ID'});
+      res.status(404).json({ message: 'There is no Blog with that ID' });
       return;
     }
-    res.status(200).json(dbBlogData);
+    //res.status(200).json(dbBlogData);
+    // Serialize data so the template can read it
+    const blog = dbBlogData.get({ plain: true });
+    console.log(`blog: ${JSON.stringify(blog)}`)
+
+    // Pass serialized data and session flag into template
+    res.render('blog', {
+      ...blog,
+      logged_in: req.session.logged_in
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json(err);
@@ -62,44 +79,26 @@ router.post('/blog', async (req, res) => {
 });
 
 // UPDATE BLOG BY ID
-router.put('/blog/:id', (req, res) => {
-  // update product data
-  Blog.update(req.body, {
-    where: {
-      id: req.params.id,
-    },
-  })
-    .then((blog) => {
-      // find all associated tags from ProductTag
-      return ProductTag.findAll({ where: { product_id: req.params.id } });
+router.put('/blog/:id', withAuth, (req, res) => {
+  // update blog contents
+  Blog.update({
+    title: req.body.title,
+    contents: req.body.contents
+  },
+    {
+      where: {
+        id: req.params.id
+      }
+    }).then(dbPostData => {
+      if (!dbPostData) {
+        res.status(404).json({ message: 'No post found with this id' });
+        return;
+      }
+      res.json(dbPostData);
     })
-    .then((productTags) => {
-      // get list of current tag_ids
-      const productTagIds = productTags.map(({ tag_id }) => tag_id);
-      // create filtered list of new tag_ids
-      const newProductTags = req.body.tagIds
-        .filter((tag_id) => !productTagIds.includes(tag_id))
-        .map((tag_id) => {
-          return {
-            product_id: req.params.id,
-            tag_id,
-          };
-        });
-      // figure out which ones to remove
-      const productTagsToRemove = productTags
-        .filter(({ tag_id }) => !req.body.tagIds.includes(tag_id))
-        .map(({ id }) => id);
-
-      // run both actions
-      return Promise.all([
-        ProductTag.destroy({ where: { id: productTagsToRemove } }),
-        ProductTag.bulkCreate(newProductTags),
-      ]);
-    })
-    .then((updatedProductTags) => res.json(updatedProductTags))
-    .catch((err) => {
-      // console.log(err);
-      res.status(400).json(err);
+    .catch(err => {
+      console.log(err);
+      res.status(500).json(err);
     });
 });
 
@@ -112,10 +111,45 @@ router.delete('/blog/:id', async (req, res) => {
     });
     // If the Product ID is not present in the DB
     if (!blogData) {
-      res.status(404).json({ message: 'There is no Blog with that ID'});
+      res.status(404).json({ message: 'There is no Blog with that ID' });
       return;
     }
     res.status(200).json(blogData);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+// RENDER LOGIN PAGE
+router.get('/login', (req, res) => {
+  // If the user is already logged in, redirect the request to another route
+  if (req.session.logged_in) {
+    res.redirect('/dashboard');
+    return;
+  }
+  res.render('login');
+});
+
+//RENDER SIGNUP
+router.get('/signup', (req, res) => {
+  res.render('signup');
+});
+
+// RENDER PROFILE uses 'withAuth' middleware to prevent access to route
+router.get('/profile', withAuth, async (req, res) => {
+  try {
+    // Find the logged in user based on the session ID
+    const userData = await User.findByPk(req.session.user_id, {
+      attributes: { exclude: ['password'] },
+      include: [{ model: Blog }],
+    });
+
+    const user = userData.get({ plain: true });
+
+    res.render('profile', {
+      ...user,
+      logged_in: true
+    });
   } catch (err) {
     res.status(500).json(err);
   }
